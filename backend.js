@@ -5,7 +5,7 @@ const app = express()
 const http = require('http')
 const server = http.createServer(app)
 const { Server } = require('socket.io')
-const io = new Server(server, {pingInterval: 2000, pingTimeout: 5000})
+const io = new Server(server, { pingInterval: 2000, pingTimeout: 5000 })
 
 const port = 3000
 
@@ -18,14 +18,14 @@ app.get('/', (req, res) => {
 const backEndPlayers = {}
 
 const SPEED = 10
-io.on('connection', (socket) => {
-  console.log('user connected');
 
+io.on('connection', (socket) => {
+  console.log('a user connected')
   backEndPlayers[socket.id] = {
     x: 500 * Math.random(),
     y: 500 * Math.random(),
-    color: `hsl(${360*Math.random()}, 100%, 50%)`,
-    sequenceNumber: 0,
+    color: `hsl(${360 * Math.random()}, 100%, 50%)`,
+    sequenceNumber: 0
   }
 
   io.emit('updatePlayers', backEndPlayers)
@@ -36,32 +36,36 @@ io.on('connection', (socket) => {
     io.emit('updatePlayers', backEndPlayers)
   })
 
-  socket.on('keydown', ({keycode, sequenceNumber}) => {
+  socket.on('keydown', ({ keycode, sequenceNumber }) => {
     backEndPlayers[socket.id].sequenceNumber = sequenceNumber
-    switch(keycode){
+    switch (keycode) {
       case 'KeyW':
         backEndPlayers[socket.id].y -= SPEED
         break
+
       case 'KeyA':
         backEndPlayers[socket.id].x -= SPEED
         break
+
       case 'KeyS':
         backEndPlayers[socket.id].y += SPEED
         break
+
       case 'KeyD':
         backEndPlayers[socket.id].x += SPEED
         break
     }
   })
 
-  console.log(backEndPlayers);
-});
+  console.log(backEndPlayers)
+})
 
 setInterval(() => {
   io.emit('updatePlayers', backEndPlayers)
-}, 1500)
-
+}, 15)
 
 server.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
+
+console.log('server did load')
